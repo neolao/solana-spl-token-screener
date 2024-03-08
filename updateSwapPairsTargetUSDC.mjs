@@ -14,7 +14,12 @@ for (const pair of pairs) {
         continue;
     }
 
-    if (pair.target === "USDC") {
+    if (["USDC", "USDT"].includes(pair.base)) {
+        continue;
+    }
+
+    // USDC
+    if (pair.target_address === "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v") {
         filtered.push(pair);
     }
 }
