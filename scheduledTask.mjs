@@ -1,18 +1,23 @@
 import { spawn } from "node:child_process";
 
-function getDelay() {
-    const now = Date.now();
-
+function getNextTaskDate() {
     const nextTaskDate = new Date();
     nextTaskDate.setUTCHours(1);
     nextTaskDate.setUTCMinutes(0);
     nextTaskDate.setUTCSeconds(0);
     nextTaskDate.setUTCMilliseconds(0);
-    let nextTaskTime = nextTaskDate.getTime();
+
+    return nextTaskDate;
+}
+
+function getDelay(nextDate) {
+    const now = Date.now();
+
+    let nextTaskTime = nextDate.getTime();
 
     if (nextTaskTime < now) {
-        nextTaskDate.setUTCDate(nextTaskDate.getUTCDate() + 1);
-        nextTaskTime = nextTaskDate.getTime();
+        nextDate.setUTCDate(nextDate.getUTCDate() + 1);
+        nextTaskTime = nextDate.getTime();
     }
 
     const delay = nextTaskTime - now;
@@ -39,8 +44,9 @@ async function executeTask() {
 }
 
 function wait() {
-    const delay = getDelay();
-    console.log(`Task in ${delay} seconds ...`);
+    const nextTaskDate = getNextTaskDate();
+    const delay = getDelay(nextTaskDate);
+    console.log(`Task at ${nextTaskDate.toLocaleString('fr-FR')} ...`);
     setTimeout(async () => {
         await executeTask();
         wait();
