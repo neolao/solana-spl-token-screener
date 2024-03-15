@@ -26,3 +26,12 @@ for (const pair of pairs) {
 
 const json = JSON.stringify(filtered, null, "  ");
 writeFileSync(`${__dirname}/data/pairs.json`, json);
+
+// Summary
+const oldPairs = JSON.parse(readFileSync(`${__dirname}/data/pairs.json`));
+const oldBases = oldPairs.map(pair => pair.base);
+const newBases = filtered.map(pair => pair.base);
+const removed = oldBases.filter(base => !newBases.includes(base));
+const added = newBases.filter(base => !oldBases.includes(base));
+console.log("Removed", removed);
+console.log("Added", added);

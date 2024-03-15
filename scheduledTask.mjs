@@ -25,9 +25,9 @@ function getDelay(nextDate) {
 }
 
 
-async function executeTask() {
+async function executeTask(scriptName) {
     return new Promise((resolve, reject) => {
-        const task = spawn("node", ["fetchYesterdayOHLCV.mjs"]);
+        const task = spawn("node", [scriptName]);
 
         task.stdout.on('data', (data) => {
           process.stdout.write(data);
@@ -48,7 +48,8 @@ function wait() {
     const delay = getDelay(nextTaskDate);
     console.log(`Task at ${nextTaskDate.toLocaleString('fr-FR')} ...`);
     setTimeout(async () => {
-        await executeTask();
+        await executeTask("updateSwapPairsTargetUSDC.mjs");
+        await executeTask("fetchYesterdayOHLCV.mjs");
         wait();
     }, delay);
 }

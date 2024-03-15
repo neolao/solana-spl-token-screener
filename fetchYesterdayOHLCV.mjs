@@ -24,9 +24,14 @@ for (const pair of pairs) {
     const folderPath = `${__dirname}/data/${baseAddress}_${targetAddress}`;
     mkdirSync(folderPath, { recursive: true });
 
-    process.stdout.write(`Fetching ${baseSymbol}/${targetSymbol} ...`);
+    process.stdout.write(`Fetching ${baseSymbol}/${targetSymbol} …`);
     const timeFrom = getLastOHLCVTime(baseAddress, targetAddress);
     const timeTo = getYesterdayTime();
+    if (timeFrom >= timeTo) {
+        process.stdout.write(` up to date\n`);
+        continue;
+    }
+
     const candlesticks = await fetchOHLCV(baseAddress, targetAddress, "1D", timeFrom, timeTo);
     if (candlesticks.length <= 0) {
         process.stdout.write(`\n`);
