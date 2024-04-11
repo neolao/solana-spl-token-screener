@@ -16,9 +16,12 @@ const pairs = JSON.parse(pairsContent);
 const pair = pairs.filter((pair) => {
     return pair.base_address === baseAddress && pair.target_address === targetAddress;
 })[0];
+if (pair === undefined) {
+    throw new Error(`Pair not found`);
+}
 
 const columns = process.stdout.columns;
-const rows = process.stdout.rows - 3;
+const rows = process.stdout.rows - 4;
 
 const candlesticks = getLastOHLCV(baseAddress, targetAddress, columns);
 
@@ -94,4 +97,16 @@ for (let candlestick of candlesticks) {
 
 }
 await cursorTo(0, rows+1);
+
+// Infos
 console.log(pair.base, "/", pair.target, "~", pair.base_address, "/", pair.target_address);
+
+const firstCandlestick = candlesticks[0];
+const lastCandlestick = candlesticks[candlesticks.length - 1];
+const periodStartDate = new Date(firstCandlestick.unixTime * 1000);
+const periodEndDate = new Date(lastCandlestick.unixTime * 1000);
+console.log(
+    periodStartDate.toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"}),
+    "-",
+    periodEndDate.toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric"}),
+);
