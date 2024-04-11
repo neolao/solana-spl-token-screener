@@ -24,7 +24,7 @@ for (const pair of pairs) {
     const folderPath = `${__dirname}/data/${baseAddress}_${targetAddress}`;
     mkdirSync(folderPath, { recursive: true });
 
-    process.stdout.write(`Fetching ${baseSymbol}/${targetSymbol} …`);
+    process.stdout.write(`Fetching ${baseSymbol}/${targetSymbol} (${baseAddress}) …`);
     const timeFrom = getLastOHLCVTime(baseAddress, targetAddress);
     const timeTo = getYesterdayTime();
     if (timeFrom >= timeTo) {

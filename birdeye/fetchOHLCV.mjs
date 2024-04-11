@@ -32,9 +32,20 @@ export default async function fetchOHLVC(baseAddress, targetAddress, type, timeF
     const url = `https://public-api.birdeye.so/defi/ohlcv/base_quote?base_address=${baseAddress}&quote_address=${targetAddress}&type=${type}&time_from=${timeFrom}&time_to=${timeTo}`;
     let candlesticks;
 
+    let retryCount = 0;
     do {
-        const response = await fetch(url, { headers: { "x-api-key": config.birdeye.apiKey } });
-        const content = await response.json();
+        let waitDuration = 60;
+        let response;
+        let content;
+        try {
+            response = await fetch(url, { headers: { "x-api-key": config.birdeye.apiKey } });
+            content = await response.json();
+        } catch (error) {
+            process.stdout.write(` retry…`);
+            await wait(waitDuration * 1000);
+            continue;
+        }
+
         if (content.success) {
             candlesticks = content.data.items;
             break;
@@ -46,14 +57,21 @@ export default async function fetchOHLVC(baseAddress, targetAddress, type, timeF
             break;
         }
 
-        let waitDuration = 60;
+        retryCount++;
+        if (retryCount >= 20) {
+            candlesticks = [];
+            process.stdout.write(` Max retry reached`);
+            break;
+        }
+
         if (response.headers.has("retry-after")) {
-            waitDuration = parseInt(response.headers.get("retry-after"));
+            waitDuration = parseInt(response.headers.get("retry-after")) + 1;
         }
         process.stdout.write(` retry…`);
         //console.log(baseAddress, targetAddress);
         await wait(waitDuration * 1000);
     } while (true);
+
 
     return candlesticks;
 }

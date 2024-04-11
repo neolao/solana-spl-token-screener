@@ -13,6 +13,10 @@ export default function getHistoricalOHLCV(baseAddress, targetAddress, year) {
     }
 
     const content = readFileSync(filePath);
-    const historical = JSON.parse(content);
-    return historical;
+    try {
+        const historical = JSON.parse(content);
+        return historical;
+    } catch (error) {
+        throw new Error(`Unable to parse ${filePath}`);
+    }
 }
